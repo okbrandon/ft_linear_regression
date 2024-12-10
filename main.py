@@ -24,8 +24,8 @@ class DataSet:
 		self.data.seek(0)
 
 class Predictor:
-	def __init__(self, data_set: DataSet):
-		self.data = data_set
+	def __init__(self):
+		pass
 
 	def ask_mileage(self):
 		while True:
@@ -39,7 +39,7 @@ class Predictor:
 				print(f'Error: Invalid mileage - {e}')
 		return mileage
 
-	def predict_price(self, theta0: float, theta1: float, mileage: float):
+	def estimate_price(self, theta0: float, theta1: float, mileage: float):
 		return theta0 + (theta1 * mileage)
 
 if __name__ == '__main__':
@@ -56,8 +56,8 @@ if __name__ == '__main__':
 	except Exception as e:
 		sys.exit(f'Error: Unexpected error - {e}')
 
-	predictor = Predictor(data_set)
+	predictor = Predictor()
 	mileage = predictor.ask_mileage()
 
-	price = predictor.predict_price(theta0, theta1, mileage)
+	price = predictor.estimate_price(theta0, theta1, mileage)
 	print(f'Predictor: Predicting price for mileage {mileage} - ${price}')
