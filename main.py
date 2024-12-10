@@ -1,5 +1,6 @@
 import csv
 import sys
+import numpy as np
 
 class DataSet:
 	def __init__(self, data_path: str):
@@ -42,6 +43,35 @@ class Predictor:
 	def estimate_price(self, theta0: float, theta1: float, mileage: float):
 		return theta0 + (theta1 * mileage)
 
+class LinearRegression:
+	def __init__(self, data_set: DataSet, learning_rate: float, iterations: int):
+		self.data_set = data_set
+		self.learning_rate = learning_rate
+		self.iterations = iterations
+		self.X = [row[0] for row in data_set.values]
+		self.y = [row[1] for row in data_set.values]
+		self.normalized_X = self.normalize(self.X)
+		self.normalized_y = self.normalize(self.y)
+
+	def normalize(self, array: list):
+		return (array - np.min(array)) / (np.max(array) - np.min(array))
+
+	def denormalize(self, normalized_theta0: float, normalized_theta1: float):
+		pass
+
+	def train(self):
+		normalized_theta0, normalized_theta1 = 0, 0
+		m = len(self.normalized_X)
+		predictor = Predictor()
+
+		for _ in range(self.iterations):
+			normalized_y_pred = predictor.estimate_price(normalized_theta0, normalized_theta1, self.normalized_X)
+			normalized_theta0 -= self.learning_rate * (1 / m) * np.sum(normalized_y_pred - self.normalized_y)
+			normalized_theta1 -= self.learning_rate * (1 / m) * np.sum((normalized_y_pred - self.normalized_y) * self.normalized_X)
+
+		print(f'LinearRegression: Training complete - theta0: {normalized_theta0}, theta1: {normalized_theta1}')
+
+
 if __name__ == '__main__':
 	input_file = 'data/data.csv'
 	theta0, theta1 = 0, 0
@@ -61,3 +91,6 @@ if __name__ == '__main__':
 
 	price = predictor.estimate_price(theta0, theta1, mileage)
 	print(f'Predictor: Predicting price for mileage {mileage} - ${price}')
+
+	linear_regression = LinearRegression(data_set, 0.1, 1000)
+	linear_regression.train()
