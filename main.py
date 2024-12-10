@@ -48,16 +48,24 @@ class LinearRegression:
 		self.data_set = data_set
 		self.learning_rate = learning_rate
 		self.iterations = iterations
+
 		self.X = [row[0] for row in data_set.values]
-		self.y = [row[1] for row in data_set.values]
 		self.normalized_X = self.normalize(self.X)
+		self.min_X = np.min(self.X)
+		self.max_X = np.max(self.X)
+
+		self.y = [row[1] for row in data_set.values]
 		self.normalized_y = self.normalize(self.y)
+		self.min_y = np.min(self.y)
+		self.max_y = np.max(self.y)
 
 	def normalize(self, array: list):
 		return (array - np.min(array)) / (np.max(array) - np.min(array))
 
 	def denormalize(self, normalized_theta0: float, normalized_theta1: float):
-		pass
+		theta1 = normalized_theta1 * (self.max_X - self.min_X) / (self.max_y - self.min_y)
+		theta0 = normalized_theta0 * (self.max_y - self.min_y) - theta1 * self.min_X
+		return theta0, theta1
 
 	def train(self):
 		normalized_theta0, normalized_theta1 = 0, 0
@@ -69,8 +77,8 @@ class LinearRegression:
 			normalized_theta0 -= self.learning_rate * (1 / m) * np.sum(normalized_y_pred - self.normalized_y)
 			normalized_theta1 -= self.learning_rate * (1 / m) * np.sum((normalized_y_pred - self.normalized_y) * self.normalized_X)
 
-		print(f'LinearRegression: Training complete - theta0: {normalized_theta0}, theta1: {normalized_theta1}')
-
+		theta0, theta1 = self.denormalize(normalized_theta0, normalized_theta1)
+		return theta0, theta1
 
 if __name__ == '__main__':
 	input_file = 'data/data.csv'
@@ -92,5 +100,8 @@ if __name__ == '__main__':
 	price = predictor.estimate_price(theta0, theta1, mileage)
 	print(f'Predictor: Predicting price for mileage {mileage} - ${price}')
 
-	linear_regression = LinearRegression(data_set, 0.1, 1000)
-	linear_regression.train()
+	linear_regression = LinearRegression(data_set, 0.15, 1000)
+	theta0, theta1 = linear_regression.train()
+
+	price = predictor.estimate_price(theta0, theta1, mileage)
+	print(f'LinearRegression: Predicting price for mileage {mileage} - ${price}')
