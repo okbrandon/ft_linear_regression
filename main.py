@@ -48,34 +48,42 @@ class LinearRegression:
 		self.data_set = data_set
 		self.learning_rate = learning_rate
 		self.iterations = iterations
-
 		self.X = [row[0] for row in data_set.values]
-		self.normalized_X = self.normalize(self.X)
-		self.min_X = np.min(self.X)
-		self.max_X = np.max(self.X)
-
 		self.y = [row[1] for row in data_set.values]
+		self.normalized_X = self.normalize(self.X)
 		self.normalized_y = self.normalize(self.y)
-		self.min_y = np.min(self.y)
-		self.max_y = np.max(self.y)
 
 	def normalize(self, array: list):
-		return (array - np.min(array)) / (np.max(array) - np.min(array))
+		return (array - np.mean(array)) / np.std(array)
 
 	def denormalize(self, normalized_theta0: float, normalized_theta1: float):
-		theta1 = normalized_theta1 * (self.max_X - self.min_X) / (self.max_y - self.min_y)
-		theta0 = normalized_theta0 * (self.max_y - self.min_y) - theta1 * self.min_X
+		theta1 = normalized_theta1 * (np.std(self.y) / np.std(self.X))
+		theta0 = np.mean(self.y) - theta1 * np.mean(self.X) + normalized_theta0 * np.std(self.y)
 		return theta0, theta1
+
+	def compute_cost(self, theta0, theta1):
+		m = len(self.normalized_X)
+		predictions = theta0 + theta1 * self.normalized_X
+		cost = (1 / (2 * m)) * np.sum((predictions - self.normalized_y) ** 2)
+		return cost
 
 	def train(self):
 		normalized_theta0, normalized_theta1 = 0, 0
 		m = len(self.normalized_X)
 		predictor = Predictor()
 
-		for _ in range(self.iterations):
+		for i in range(self.iterations):
 			normalized_y_pred = predictor.estimate_price(normalized_theta0, normalized_theta1, self.normalized_X)
-			normalized_theta0 -= self.learning_rate * (1 / m) * np.sum(normalized_y_pred - self.normalized_y)
-			normalized_theta1 -= self.learning_rate * (1 / m) * np.sum((normalized_y_pred - self.normalized_y) * self.normalized_X)
+
+			normalized_gradient_theta0 = (1 / m) * np.sum(normalized_y_pred - self.normalized_y)
+			normalized_gradient_theta1 = (1 / m) * np.sum(self.normalized_X * (normalized_y_pred - self.normalized_y))
+
+			normalized_theta0 -= self.learning_rate * normalized_gradient_theta0
+			normalized_theta1 -= self.learning_rate * normalized_gradient_theta1
+
+			if i % 100 == 0:
+				cost = self.compute_cost(normalized_theta0, normalized_theta1)
+				print(f'LinearRegression: Iteration #{i} has a cost of {cost}')
 
 		theta0, theta1 = self.denormalize(normalized_theta0, normalized_theta1)
 		return theta0, theta1
@@ -100,7 +108,7 @@ if __name__ == '__main__':
 	price = predictor.estimate_price(theta0, theta1, mileage)
 	print(f'Predictor: Predicting price for mileage {mileage} - ${price}')
 
-	linear_regression = LinearRegression(data_set, 0.15, 1000)
+	linear_regression = LinearRegression(data_set, 0.01, 1000)
 	theta0, theta1 = linear_regression.train()
 
 	price = predictor.estimate_price(theta0, theta1, mileage)
