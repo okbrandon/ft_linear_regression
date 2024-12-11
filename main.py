@@ -2,6 +2,7 @@ import csv
 import sys
 import numpy as np
 
+
 class DataSet:
 	def __init__(self, data_path: str):
 		self.data_path = data_path
@@ -24,6 +25,7 @@ class DataSet:
 
 		self.data.seek(0)
 
+
 class Predictor:
 	def __init__(self):
 		pass
@@ -42,6 +44,7 @@ class Predictor:
 
 	def estimate_price(self, theta0: float, theta1: float, mileage: float):
 		return theta0 + (theta1 * mileage)
+
 
 class LinearRegression:
 	def __init__(self, data_set: DataSet, learning_rate: float, iterations: int):
@@ -88,7 +91,8 @@ class LinearRegression:
 		theta0, theta1 = self.denormalize(normalized_theta0, normalized_theta1)
 		return theta0, theta1
 
-if __name__ == '__main__':
+
+def main():
 	input_file = 'data/data.csv'
 	theta0, theta1 = 0, 0
 
@@ -113,3 +117,7 @@ if __name__ == '__main__':
 
 	price = predictor.estimate_price(theta0, theta1, mileage)
 	print(f'LinearRegression: Predicting price for mileage {mileage} - ${price}')
+
+
+if __name__ == '__main__':
+	main()
