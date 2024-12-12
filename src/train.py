@@ -1,6 +1,8 @@
 import sys
 import csv
+import os
 import numpy as np
+import matplotlib.pyplot as plt
 
 from models import DataSet
 from predict import Predictor
@@ -93,6 +95,30 @@ class LinearRegression:
             f'{prefix} Theta values saved to [bold]{output_file}[/]'
         )
 
+    def plot(self):
+        """ Plot the data """
+        predictor = Predictor()
+
+        if not os.path.exists('./img'):
+            os.makedirs('./img')
+
+        """ Plot the data """
+        plt.scatter(self.X, self.y, color='purple', label='Data points', marker='*')
+        plt.xlabel('Mileage (in km)')
+        plt.ylabel('Price')
+        plt.title('Mileage vs Price - Linear Regression')
+        plt.legend()
+        plt.savefig('./img/data_plot.png')
+
+        """ Plot the data with regression line """
+        plt.plot(self.X, [predictor.estimate_price(self.theta0, self.theta1, x) for x in self.X], color='pink', label='Regression line')
+        plt.legend()
+        plt.savefig('./img/data_plot_with_regression.png')
+
+        console.log(
+            f'{prefix} Plots saved to [bold]img[/]'
+        )
+
 
 def main():
     """ Main function """
@@ -146,6 +172,7 @@ def main():
     linear_regression = LinearRegression(data_set, 0.01, 1000)
     linear_regression.train()
     linear_regression.export_thetas()
+    linear_regression.plot()
 
 
 if __name__ == '__main__':
