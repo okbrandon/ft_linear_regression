@@ -79,7 +79,9 @@ def main():
                 with open(theta_file_path) as _:
                     pass
             except FileNotFoundError:
-                console.print('[red][bold]Error:[/] [gray]File not found[/]')
+                console.print(
+                    '[red][bold]Error:[/] [gray]File not found[/]'
+                )
                 continue
             except Exception as e:
                 console.print(
