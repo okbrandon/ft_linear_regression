@@ -63,8 +63,8 @@ class Predictor:
                 )
         return mileage
 
-    def estimate_price(self, theta0: float, theta1: float, mileage: float):
-        return theta0 + (theta1 * mileage)
+    def estimate_price(self, theta0, theta1, mileage):
+        return float(theta0) + (float(theta1) * mileage)
 
 
 def main():
