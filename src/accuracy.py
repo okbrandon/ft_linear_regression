@@ -1,5 +1,6 @@
 import csv
 import sys
+import argparse
 import numpy as np
 
 from models import DataSet
@@ -77,26 +78,10 @@ class Accuracy:
 
 def main():
     """ Main function """
-    def ask_for_data_file_path():
-        """ Ask the user for the path to the data file """
-        while True:
-            input_file = console.input(
-                'Enter the path to the [gray][bold]file containing data[/][/]: '
-            )
-            try:
-                with open(input_file) as _:
-                    break
-            except FileNotFoundError:
-                console.print(
-                    '[red][bold]Error:[/] [gray]File not found[/]'
-                )
-                continue
-            except Exception as e:
-                console.print(
-                    f'[red][bold]Error:[/] [gray]Unexpected error - [/][white]{e}[/]'
-                )
-                sys.exit(1)
-        return input_file
+    parser = argparse.ArgumentParser(description='Compute the accuracy of the model')
+    parser.add_argument('data_file', type=str, help='Path to the file containing the data')
+    parser.add_argument('theta_file', type=str, help='Path to the file containing theta values')
+    args = parser.parse_args()
 
     def check_data(data_set: DataSet):
         """ Check if the data is as expected """
@@ -119,28 +104,6 @@ def main():
             )
             sys.exit(1)
 
-    def ask_for_theta_file_path():
-        """ Ask the user for the path to the file containing thetas """
-        while True:
-            theta_file_path = console.input(
-                'Enter the path to the [gray][bold]file containing thetas[/][/]: '
-            )
-            try:
-                with open(theta_file_path) as _:
-                    pass
-            except FileNotFoundError:
-                console.print(
-                    '[red][bold]Error:[/] [gray]File not found[/]'
-                )
-                continue
-            except Exception as e:
-                console.print(
-                    f'[red][bold]Error:[/] [gray]Unexpected error - [/][white]{e}[/]'
-                )
-                sys.exit(1)
-            break
-        return theta_file_path
-
     def check_thetas(accuracy: Accuracy):
         """ Check if the thetas are as expected """
         try:
@@ -162,8 +125,8 @@ def main():
             )
             sys.exit(1)
 
-    data_file_path = ask_for_data_file_path()
-    theta_file_path = ask_for_theta_file_path()
+    data_file_path = args.data_file
+    theta_file_path = args.theta_file
 
     data_set = DataSet(data_file_path)
     check_data(data_set)
