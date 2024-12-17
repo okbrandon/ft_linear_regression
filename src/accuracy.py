@@ -47,28 +47,32 @@ class Accuracy:
             self.theta0 = float(row['theta0'])
             self.theta1 = float(row['theta1'])
 
+    def compute_rsquared(self):
+        """ Compute the R-squared value of the model """
+        if self.theta0 is None or self.theta1 is None:
+            raise ValueError('Thetas are not loaded')
+
+        predictor = Predictor()
+        X = [row[0] for row in self.data_set.values]
+        y = [row[1] for row in self.data_set.values]
+        square_sum = 0
+        square_residual_sum = 0
+
+        for i in range(len(X)):
+            y_pred = predictor.estimate_price(self.theta0, self.theta1, X[i])
+            square_sum += (y[i] - np.mean(y)) ** 2
+            square_residual_sum += (y[i] - y_pred) ** 2
+
+        rsquared = 1 - (square_residual_sum / square_sum)
+        return rsquared
+
     def compute_accuracy(self):
         """ Compute the accuracy of the model """
         if self.theta0 is None or self.theta1 is None:
             raise ValueError('Thetas are not loaded')
 
-        predictor = Predictor()
-        price_values = np.array([row[1] for row in self.data_set.values])
-
-        sum_real_price = price_values.sum()
-        sum_pred_price = 0
-
-        km_values = [row[0] for row in self.data_set.values]
-        for km in km_values:
-            sum_pred_price += int(predictor.estimate_price(self.theta0, self.theta1, km))
-
-        console.log(
-            f'{prefix} Sum of real prices: [bold]{sum_real_price}[/]\n'
-            f'{prefix} Sum of predicted prices: [bold]{sum_pred_price}[/]\n'
-        )
-
-        accuracy_percentage = 100 - abs(((sum_pred_price - sum_real_price) / sum_real_price) * 100)
-        return accuracy_percentage
+        rsquared = self.compute_rsquared()
+        return rsquared * 100
 
 
 def main():
@@ -168,8 +172,12 @@ def main():
     check_thetas(accuracy)
 
     accuracy_percentage = accuracy.compute_accuracy()
+    rsquared = accuracy.compute_rsquared()
+    accuracy_color = 'green' if accuracy_percentage > 60 else 'red'
+    rsquared_color = 'green' if rsquared > 0.6 else 'red'
     console.print(
-        f'{prefix} The accuracy of the model is [green]{str(accuracy_percentage)}%[/]'
+        f'{prefix} The accuracy of the model is [{accuracy_color}]{str(accuracy_percentage)}%[/]\n'
+        f'{prefix} The R-squared value of the model is [{rsquared_color}]{str(rsquared)}[/]'
     )
 
 
