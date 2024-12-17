@@ -1,5 +1,6 @@
 import csv
 import sys
+import argparse
 
 from rich.console import Console
 
@@ -12,7 +13,7 @@ class Predictor:
     def __init__(self, theta_file_path: str = None):
         """ Initialize the Predictor class """
         self.theta_file_path = theta_file_path
-        self.theta0, self.theta1 = None, None
+        self.theta0, self.theta1 = 0, 0
 
     def load_thetas(self):
         """ Load thetas from the file """
@@ -45,9 +46,6 @@ class Predictor:
 
     def ask_mileage(self):
         """ Ask the user for the mileage """
-        if self.theta0 is None or self.theta1 is None:
-            raise ValueError('Thetas are not loaded')
-
         while True:
             mileage = console.input(
                 'Enter the mileage [gray][bold](in km)[/][/]: '
@@ -69,49 +67,31 @@ class Predictor:
 
 def main():
     """ Main function """
-    def ask_for_theta_file_path():
-        """ Ask the user for the path to the file containing thetas """
-        while True:
-            theta_file_path = console.input(
-                'Enter the path to the [gray][bold]file containing thetas[/][/]: '
+    parser = argparse.ArgumentParser(description='Predict the price of a car based on its mileage')
+    parser.add_argument('-f', '--theta_file', type=str, help='Path to the file containing theta values')
+    args = parser.parse_args()
+
+    predictor = Predictor(args.theta_file)
+
+    if args.theta_file:
+        try:
+            console.log(
+                f'{prefix} [white]Loading thetas...[/]'
             )
-            try:
-                with open(theta_file_path) as _:
-                    pass
-            except FileNotFoundError:
-                console.print(
-                    '[red][bold]Error:[/] [gray]File not found[/]'
-                )
-                continue
-            except Exception as e:
-                console.print(
-                    f'[red][bold]Error:[/] [gray]Unexpected error - [/][white]{e}[/]'
-                )
-                sys.exit(1)
-            break
-        return theta_file_path
-
-    theta_file_path = ask_for_theta_file_path()
-    predictor = Predictor(theta_file_path)
-
-    try:
-        console.log(
-            f'{prefix} [white]Loading thetas...[/]'
-        )
-        predictor.load_thetas()
-        console.log(
-            f'{prefix} [white]Thetas loaded [green]successfully[/][/]'
-        )
-    except ValueError as e:
-        console.print(
-            f'[red][bold]Error:[/] [gray]Thetas loading failed - [/][white]{e}[/]'
-        )
-        sys.exit(1)
-    except Exception as e:
-        console.print(
-            f'[red][bold]Error:[/] [gray]Unexpected error - [/][white]{e}[/]'
-        )
-        sys.exit(1)
+            predictor.load_thetas()
+            console.log(
+                f'{prefix} [white]Thetas loaded [green]successfully[/][/]'
+            )
+        except ValueError as e:
+            console.print(
+                f'[red][bold]Error:[/] [gray]Thetas loading failed - [/][white]{e}[/]'
+            )
+            sys.exit(1)
+        except Exception as e:
+            console.print(
+                f'[red][bold]Error:[/] [gray]Unexpected error - [/][white]{e}[/]'
+            )
+            sys.exit(1)
 
     mileage = predictor.ask_mileage()
     price = predictor.estimate_price(predictor.theta0, predictor.theta1, mileage)
