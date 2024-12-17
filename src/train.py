@@ -14,10 +14,11 @@ prefix = '[purple][bold][Train][/][/]'
 
 
 class LinearRegression:
-    def __init__(self, data_set: DataSet, learning_rate: float):
+    def __init__(self, data_set: DataSet, learning_rate: float, iterations: int = 1000):
         """ Initialize the LinearRegression class """
         self.data_set = data_set
         self.learning_rate = learning_rate
+        self.iterations = iterations
         self.X = [row[0] for row in data_set.values]
         self.y = [row[1] for row in data_set.values]
         self.normalized_X = self.normalize(self.X)
@@ -55,14 +56,13 @@ class LinearRegression:
         normalized_theta0, normalized_theta1 = 0, 0
         m = len(self.normalized_X)
         predictor = Predictor()
-        i = 0
 
         previous_values = {
             'theta0': 0,
             'theta1': 0
         }
 
-        while True:
+        for i in range(self.iterations):
             previous_values['theta0'], previous_values['theta1'] = normalized_theta0, normalized_theta1
 
             normalized_y_pred = predictor.estimate_price(normalized_theta0, normalized_theta1, self.normalized_X)
@@ -82,10 +82,8 @@ class LinearRegression:
             if i % 100 == 0:
                 cost = self.compute_cost(normalized_theta0, normalized_theta1)
                 console.log(
-                    f'{prefix} Iteration #[bold]{i}[/] has a cost of [bold]{cost:.16f}[/]'
+                    f'{prefix} Iteration #[bold]{i}[/] has a cost of [bold]{cost}[/]'
                 )
-
-            i += 1
 
         self.theta0, self.theta1 = self.denormalize(normalized_theta0, normalized_theta1)
 
@@ -193,7 +191,7 @@ def main():
 
     check_data(data_set)
 
-    linear_regression = LinearRegression(data_set, 0.1)
+    linear_regression = LinearRegression(data_set, 0.1, 10000)
     linear_regression.train()
     linear_regression.export_thetas()
     linear_regression.plot()
