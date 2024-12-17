@@ -1,6 +1,7 @@
 import sys
 import csv
 import os
+import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -91,7 +92,7 @@ class LinearRegression:
         """ Export the theta values to a file """
         while True:
             output_file = console.input(
-                'Enter the path to the [gray][bold]file to save thetas[/][/]: '
+                'Please enter the path where you want [cyan][bold]the thetas[/] to be saved[/]: '
             )
             try:
                 with open(output_file, 'w') as _:
@@ -144,26 +145,9 @@ class LinearRegression:
 
 def main():
     """ Main function """
-    def ask_for_data_file_path():
-        """ Ask the user for the path to the data file """
-        while True:
-            input_file = console.input(
-                'Enter the path to the [gray][bold]file containing data[/][/]: '
-            )
-            try:
-                with open(input_file) as _:
-                    break
-            except FileNotFoundError:
-                console.print(
-                    '[red][bold]Error:[/] [gray]File not found[/]'
-                )
-                continue
-            except Exception as e:
-                console.print(
-                    f'[red][bold]Error:[/] [gray]Unexpected error - [/][white]{e}[/]'
-                )
-                sys.exit(1)
-        return input_file
+    parser = argparse.ArgumentParser(description='Train the model')
+    parser.add_argument('data_file', type=str, help='Path to the file containing the data')
+    args = parser.parse_args()
 
     def check_data(data_set: DataSet):
         """ Check if the data is as expected """
@@ -186,7 +170,7 @@ def main():
             )
             sys.exit(1)
 
-    input_file = ask_for_data_file_path()
+    input_file = args.data_file
     data_set = DataSet(input_file)
 
     check_data(data_set)
