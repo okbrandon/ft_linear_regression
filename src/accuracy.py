@@ -67,14 +67,6 @@ class Accuracy:
         rsquared = 1 - (square_residual_sum / square_sum)
         return rsquared
 
-    def compute_accuracy(self):
-        """ Compute the accuracy of the model """
-        if self.theta0 is None or self.theta1 is None:
-            raise ValueError('Thetas are not loaded')
-
-        rsquared = self.compute_rsquared()
-        return rsquared * 100
-
 
 def main():
     """ Main function """
@@ -134,13 +126,11 @@ def main():
     accuracy = Accuracy(theta_file_path, data_set)
     check_thetas(accuracy)
 
-    accuracy_percentage = accuracy.compute_accuracy()
     rsquared = accuracy.compute_rsquared()
-    accuracy_color = 'green' if accuracy_percentage > 60 else 'red'
-    rsquared_color = 'green' if rsquared > 0.6 else 'red'
+    percentage = rsquared * 100
+    percentage_color = 'green' if percentage > 60 else 'red'
     console.print(
-        f'{prefix} The accuracy of the model is [{accuracy_color}]{str(accuracy_percentage)}%[/]\n'
-        f'{prefix} The R-squared value of the model is [{rsquared_color}]{str(rsquared)}[/]'
+        f'{prefix} The accuracy of the model is [{percentage_color}]{percentage:.2f}%[/]'
     )
 
 
