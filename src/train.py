@@ -45,12 +45,15 @@ class LinearRegression:
 
         return denormalized_theta0, denormalized_theta1
 
-    def compute_cost(self, theta0, theta1):
-        """ Compute the cost """
-        m = len(self.normalized_X)
-        predictions = theta0 + theta1 * self.normalized_X
-        cost = (1 / (2 * m)) * np.sum((predictions - self.normalized_y) ** 2)
-        return cost
+    def compute_rmse(self, theta0, theta1):
+        """ Compute the RMSE """
+        predictor = Predictor()
+        y_pred = [predictor.estimate_price(theta0, theta1, x) for x in self.normalized_X]
+        
+        mse = np.square(np.subtract(self.normalized_y, y_pred)).mean()
+        rmse = np.sqrt(mse)
+        
+        return rmse
 
     def train(self):
         """ Train the model """
@@ -81,9 +84,9 @@ class LinearRegression:
                 break
 
             if i % 100 == 0:
-                cost = self.compute_cost(normalized_theta0, normalized_theta1)
+                rmse = self.compute_rmse(normalized_theta0, normalized_theta1)
                 console.log(
-                    f'{prefix} Iteration #[bold]{i}[/] has a cost of [bold]{cost}[/]'
+                    f'{prefix} Iteration #[bold]{i}[/] has a RMSE of [bold]{rmse}[/]'
                 )
 
         self.theta0, self.theta1 = self.denormalize(normalized_theta0, normalized_theta1)
