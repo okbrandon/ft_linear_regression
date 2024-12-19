@@ -175,7 +175,7 @@ def main():
 
     check_data(data_set)
 
-    linear_regression = LinearRegression(data_set, 0.1, 10000)
+    linear_regression = LinearRegression(data_set, 0.01, 10000)
     linear_regression.train()
     linear_regression.export_thetas()
     linear_regression.plot()
