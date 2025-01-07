@@ -25,6 +25,7 @@ class LinearRegression:
         self.normalized_X = self.normalize(self.X)
         self.normalized_y = self.normalize(self.y)
         self.theta0, self.theta1 = 0, 0
+        self.cost_history = []
 
     def normalize(self, array):
         """ Normalize the data """
@@ -70,8 +71,10 @@ class LinearRegression:
             normalized_theta0 -= self.learning_rate * normalized_gradient_theta0
             normalized_theta1 -= self.learning_rate * normalized_gradient_theta1
 
+            rmse = self.compute_rmse(normalized_theta0, normalized_theta1)
+            self.cost_history.append(rmse)
+
             if i % 100 == 0:
-                rmse = self.compute_rmse(normalized_theta0, normalized_theta1)
                 console.log(
                     f'{prefix} Iteration #[bold]{i}[/] has a RMSE of [bold]{rmse}[/]'
                 )
@@ -115,7 +118,6 @@ class LinearRegression:
         if not os.path.exists('./img'):
             os.makedirs('./img')
 
-        """ Plot the data """
         plt.scatter(self.X, self.y, color='purple', label='Data points', marker='*')
         plt.xlabel('Mileage (in km)')
         plt.ylabel('Price')
@@ -127,9 +129,18 @@ class LinearRegression:
         plt.plot(self.X, [predictor.estimate_price(self.theta0, self.theta1, x) for x in self.X], color='pink', label='Regression line')
         plt.legend()
         plt.savefig('./img/data_plot_with_regression.png')
+        
+        """ Plot the normalized cost history """
+        plt.clf()
+        plt.plot(range(self.iterations), self.cost_history, color='purple', label='Cost history')
+        plt.xlabel('Iterations')
+        plt.ylabel('RMSE')
+        plt.title('Iterations vs RMSE')
+        plt.legend()
+        plt.savefig('./img/cost_history_plot.png')
 
         console.log(
-            f'{prefix} Plots saved to [bold]img[/]'
+            f'{prefix} Plots saved to directory [bold]img[/]'
         )
 
 
