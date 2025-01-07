@@ -10,7 +10,7 @@ prefix = '[purple][bold][Predictor][/][/]'
 
 
 class Predictor:
-    def __init__(self, theta_file_path: str = None):
+    def __init__(self, theta_file_path: str = ""):
         """ Initialize the Predictor class """
         self.theta_file_path = theta_file_path
         self.theta0, self.theta1 = 0, 0
