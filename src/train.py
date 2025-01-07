@@ -61,14 +61,7 @@ class LinearRegression:
         m = len(self.normalized_X)
         predictor = Predictor()
 
-        previous_values = {
-            'theta0': 0,
-            'theta1': 0
-        }
-
         for i in range(self.iterations):
-            previous_values['theta0'], previous_values['theta1'] = normalized_theta0, normalized_theta1
-
             normalized_y_pred = predictor.estimate_price(normalized_theta0, normalized_theta1, self.normalized_X)
 
             normalized_gradient_theta0 = (1 / m) * np.sum(normalized_y_pred - self.normalized_y)
@@ -76,12 +69,6 @@ class LinearRegression:
 
             normalized_theta0 -= self.learning_rate * normalized_gradient_theta0
             normalized_theta1 -= self.learning_rate * normalized_gradient_theta1
-
-            if previous_values['theta0'] == normalized_theta0 and previous_values['theta1'] == normalized_theta1:
-                console.log(
-                    f'{prefix} Converged after [bold]{i}[/] iterations'
-                )
-                break
 
             if i % 100 == 0:
                 rmse = self.compute_rmse(normalized_theta0, normalized_theta1)
