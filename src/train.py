@@ -164,6 +164,7 @@ class LinearRegression:
         )
     
     def live_plot(self, axis, thetas, iteration: int):
+        """ Live plot the data """
         predictor = Predictor()
         
         axis[0].cla()
