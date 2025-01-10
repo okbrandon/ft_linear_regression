@@ -14,14 +14,12 @@ prefix = '[purple][bold][Accuracy][/][/]'
 
 class Accuracy:
     """
-    Accuracy class to compute the accuracy of the model.
-    It is calculated using the R-squared value.
+    Accuracy class to compute the accuracy of the model
+    Calculates the R-squared value of the model
     
     Attributes:
-        theta_file_path (str): Path to the file containing theta values
-        data_set (DataSet): DataSet object containing the data
-        theta0 (float): Theta0 value
-        theta1 (float): Theta1 value
+        - theta_file_path (str): Path to the file containing the theta values
+        - data_set (DataSet): DataSet object containing the data
     """
     
     def __init__(self, theta_file_path: str, data_set: DataSet):
@@ -32,14 +30,14 @@ class Accuracy:
 
     def load_thetas(self):
         """
-        Function used to load the theta values from the given file path
+        Load the theta values from the file
         
         Raises:
-            ValueError: If the theta file path is not set
-            ValueError: If the theta file has incorrect columns
-            ValueError: If the theta file has incorrect number of rows
-            ValueError: If theta0 is not a float
-            ValueError: If theta1 is not a float
+            - ValueError: If the theta file path is not set
+            - ValueError: If the theta file has incorrect columns
+            - ValueError: If the theta file has incorrect number of rows
+            - ValueError: If theta0 is not a float
+            - ValueError: If theta1 is not a float
         """
         if not self.theta_file_path:
             raise ValueError('Theta file path is not set')
@@ -70,10 +68,12 @@ class Accuracy:
 
     def compute_rsquared(self):
         """
-        Function used to compute the R-squared value
+        Compute the R-squared value of the model
+        It explains the amount of variation between the actual and predicted values
+        The closer the value is to 1, the better the model
         
-        
-        
+        Returns:
+            - rsquared (float): R-squared value of the model
         """
         if self.theta0 is None or self.theta1 is None:
             raise ValueError('Thetas are not loaded')
@@ -101,7 +101,13 @@ def main():
     args = parser.parse_args()
 
     def check_data(data_set: DataSet):
-        """ Check if the data is as expected """
+        """
+        Check if the data is valid
+        
+        Raises:
+            - AssertionError: If the data is not valid
+            - Exception: If an unexpected error occurs
+        """
         try:
             console.log(
                 f'{prefix} Validating the data...'
@@ -122,7 +128,48 @@ def main():
             sys.exit(1)
 
     def check_thetas(accuracy: Accuracy):
-        """ Check if the thetas are as expected """
+        """
+        Check if the thetas are valid
+        
+        Raises:
+            - ValueError: If the thetas are not loaded
+            - Exception: If an unexpected error occurs
+        """
         try:
             console.log(
-   
+                f'{prefix} [white]Loading thetas...[/]'
+            )
+            accuracy.load_thetas()
+            console.log(
+                f'{prefix} [white]Thetas loaded [green]successfully[/][/]'
+            )
+        except ValueError as e:
+            console.print(
+                f'[red][bold]Error:[/] [gray]Thetas loading failed - [/][white]{e}[/]'
+            )
+            sys.exit(1)
+        except Exception as e:
+            console.print(
+                f'[red][bold]Error:[/] [gray]Unexpected error - [/][white]{e}[/]'
+            )
+            sys.exit(1)
+
+    data_file_path = args.data_file
+    theta_file_path = args.theta_file
+
+    data_set = DataSet(data_file_path)
+    check_data(data_set)
+
+    accuracy = Accuracy(theta_file_path, data_set)
+    check_thetas(accuracy)
+
+    rsquared = accuracy.compute_rsquared()
+    percentage = rsquared * 100
+    percentage_color = 'green' if percentage > 60 else 'red'
+    console.print(
+        f'{prefix} The accuracy of the model is [{percentage_color}]{percentage:.2f}%[/]'
+    )
+
+
+if __name__ == '__main__':
+    main()

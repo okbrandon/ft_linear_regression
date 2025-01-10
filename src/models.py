@@ -3,14 +3,14 @@ import csv
 
 class DataSet:
     """
-    DataSet class to validate the data and store the values
+    DataSet class to handle the data
     
     Attributes:
         - data_path (str): Path to the data file
-        - data (file): File object of the data file
-        - values (list): List to store the values
+        - data (file): File object containing the data
+        - values (list): List of tuples containing the data values
     """
-
+    
     def __init__(self, data_path: str):
         """ Initialize the DataSet class """
         self.data_path = data_path
@@ -19,11 +19,11 @@ class DataSet:
 
     def validate_data(self):
         """
-        Function used to validate the data
+        Validate the data in the file
         
         Raises:
             - AssertionError: If the column names are not as expected
-            - AssertionError: If the data is not as expected, float values, no missing values
+            - AssertionError: If the data is not as expected
         """
         reader = csv.DictReader(self.data)
         columns = reader.fieldnames
