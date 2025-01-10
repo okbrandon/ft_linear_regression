@@ -2,6 +2,15 @@ import csv
 
 
 class DataSet:
+    """
+    DataSet class to validate the data and store the values
+    
+    Attributes:
+        - data_path (str): Path to the data file
+        - data (file): File object of the data file
+        - values (list): List to store the values
+    """
+
     def __init__(self, data_path: str):
         """ Initialize the DataSet class """
         self.data_path = data_path
@@ -9,7 +18,13 @@ class DataSet:
         self.values = []
 
     def validate_data(self):
-        """ Validate the data """
+        """
+        Function used to validate the data
+        
+        Raises:
+            - AssertionError: If the column names are not as expected
+            - AssertionError: If the data is not as expected, float values, no missing values
+        """
         reader = csv.DictReader(self.data)
         columns = reader.fieldnames
 

@@ -16,9 +16,26 @@ prefix = '[purple][bold][Train][/][/]'
 
 
 class LinearRegression:
+    """
+    Linear Regression class to train the model
+    
+    Attributes:
+        parameters (Parameters): The parameters for the model
+    """
     
     class Parameters:
+        """
+        Parameters class to store the parameters for the model
+        
+        Attributes:
+            data_set (DataSet): The data set
+            learning_rate (float): The learning rate (default: 0.01)
+            iterations (int): The number of iterations (default: 10000)
+            live_plotting (bool): Whether to enable live plotting
+        """
+        
         def __init__(self, data_set: DataSet, learning_rate: float, iterations: int = 1000, live_plotting: bool = False):
+            """ Initialize the Parameters class """
             self.data_set = data_set
             self.learning_rate = learning_rate
             self.iterations = iterations
@@ -35,14 +52,27 @@ class LinearRegression:
         self.cost_history = []
 
     def normalize(self, array):
-        """ Normalize the data """
+        """
+        Function used to normalize the array.
+        Normalization is useful to scale the data between 0 and 1.
+        
+        Args:
+            array (Iterable): The array to normalize
+        """
         array = np.array(array)
         min_value = array.min()
         max_value = array.max()
         return (array - min_value) / (max_value - min_value)
 
     def denormalize(self, normalized_theta0, normalized_theta1):
-        """ Denormalize the theta values """
+        """
+        Function used to denormalize the theta values.
+        It is useful to get the actual theta values from the normalized ones.
+        
+        Args:
+            normalized_theta0 (float): The normalized theta0 value
+            normalized_theta1 (float): The normalized theta1 value
+        """
         price_range = max(self.y) - min(self.y)
         km_range = max(self.X) - min(self.X)
         min_price = min(self.y)
@@ -55,7 +85,14 @@ class LinearRegression:
         return denormalized_theta0, denormalized_theta1
 
     def compute_rmse(self, theta0, theta1):
-        """ Compute the RMSE """
+        """
+        Function used to compute the Root Mean Squared Error (RMSE).
+        Evaluating how close the predicted values are to the actual values from a scale of 0 to 1.
+        
+        Args:
+            theta0 (float): The theta0 value
+            theta1 (float): The theta1 value
+        """
         predictor = Predictor()
         y_pred = [predictor.estimate_price(theta0, theta1, x) for x in self.normalized_X]
         
@@ -65,7 +102,12 @@ class LinearRegression:
         return rmse
 
     def train(self):
-        """ Train the model """
+        """
+        Function used to train the model.
+        It uses the Gradient Descent algorithm to minimize the cost function.
+        
+        The cost function is the Root Mean Squared Error (RMSE).
+        """
         normalized_theta0, normalized_theta1 = 0, 0
         m = len(self.normalized_X)
         predictor = Predictor()
@@ -102,7 +144,9 @@ class LinearRegression:
         self.theta0, self.theta1 = self.denormalize(normalized_theta0, normalized_theta1)
 
     def export_thetas(self):
-        """ Export the theta values to a file """
+        """
+        Function used to 
+        """
         while True:
             output_file = console.input(
                 'Please enter the path where you want [cyan][bold]the thetas[/] to be saved[/]: '
@@ -174,56 +218,4 @@ class LinearRegression:
         axis[0].set_ylabel('Price')
         axis[0].set_title('Mileage vs Price - Linear Regression')
         
-        axis[1].plot(range(iteration), self.cost_history, color='purple', label='Cost history')
-        axis[1].set_xlabel('Iterations')
-        axis[1].set_ylabel('RMSE')
-        axis[1].set_title('Iterations vs RMSE')
-
-
-def main():
-    """ Main function """
-    parser = argparse.ArgumentParser(description='Train the model')
-    parser.add_argument('data_file', type=str, help='Path to the file containing the data')
-    parser.add_argument('-l', '--learning_rate', type=float, default=0.01, help='Learning rate for the model')
-    parser.add_argument('-i', '--iterations', type=int, default=10000, help='Number of iterations for the model')
-    parser.add_argument('-lp', '--live_plot', action='store_true', help='Enable live plotting')
-    args = parser.parse_args()
-
-    def check_data(data_set: DataSet):
-        """ Check if the data is as expected """
-        try:
-            console.log(
-                f'{prefix} Validating the data...'
-            )
-            data_set.validate_data()
-            console.log(
-                f'{prefix} Data validated [green]successfully[/]'
-            )
-        except AssertionError as e:
-            console.print(
-                f'[red][bold]Error:[/] [gray]Data verification went bad - [/][white]{e}[/]'
-            )
-            sys.exit(1)
-        except Exception as e:
-            console.print(
-                f'[red][bold]Error:[/] [gray]Unexpected error - [/][white]{e}[/]'
-            )
-            sys.exit(1)
-
-    input_file = args.data_file
-    learning_rate = args.learning_rate
-    iterations = args.iterations
-    live_plot = args.live_plot
-    data_set = DataSet(input_file)
-
-    check_data(data_set)
-
-    parameters = LinearRegression.Parameters(data_set, learning_rate, iterations, live_plot)
-    linear_regression = LinearRegression(parameters)
-    linear_regression.train()
-    linear_regression.export_thetas()
-    linear_regression.plot()
-
-
-if __name__ == '__main__':
-    main()
+        axis[1].plot(range(iteration),

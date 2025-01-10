@@ -13,6 +13,17 @@ prefix = '[purple][bold][Accuracy][/][/]'
 
 
 class Accuracy:
+    """
+    Accuracy class to compute the accuracy of the model.
+    It is calculated using the R-squared value.
+    
+    Attributes:
+        theta_file_path (str): Path to the file containing theta values
+        data_set (DataSet): DataSet object containing the data
+        theta0 (float): Theta0 value
+        theta1 (float): Theta1 value
+    """
+    
     def __init__(self, theta_file_path: str, data_set: DataSet):
         """ Initialize the Accuracy class """
         self.theta_file_path = theta_file_path
@@ -20,7 +31,16 @@ class Accuracy:
         self.theta0, self.theta1 = None, None
 
     def load_thetas(self):
-        """ Load thetas from the file """
+        """
+        Function used to load the theta values from the given file path
+        
+        Raises:
+            ValueError: If the theta file path is not set
+            ValueError: If the theta file has incorrect columns
+            ValueError: If the theta file has incorrect number of rows
+            ValueError: If theta0 is not a float
+            ValueError: If theta1 is not a float
+        """
         if not self.theta_file_path:
             raise ValueError('Theta file path is not set')
 
@@ -49,7 +69,12 @@ class Accuracy:
             self.theta1 = float(row['theta1'])
 
     def compute_rsquared(self):
-        """ Compute the R-squared value of the model """
+        """
+        Function used to compute the R-squared value
+        
+        
+        
+        """
         if self.theta0 is None or self.theta1 is None:
             raise ValueError('Thetas are not loaded')
 
@@ -100,39 +125,4 @@ def main():
         """ Check if the thetas are as expected """
         try:
             console.log(
-                f'{prefix} [white]Loading thetas...[/]'
-            )
-            accuracy.load_thetas()
-            console.log(
-                f'{prefix} [white]Thetas loaded [green]successfully[/][/]'
-            )
-        except ValueError as e:
-            console.print(
-                f'[red][bold]Error:[/] [gray]Thetas loading failed - [/][white]{e}[/]'
-            )
-            sys.exit(1)
-        except Exception as e:
-            console.print(
-                f'[red][bold]Error:[/] [gray]Unexpected error - [/][white]{e}[/]'
-            )
-            sys.exit(1)
-
-    data_file_path = args.data_file
-    theta_file_path = args.theta_file
-
-    data_set = DataSet(data_file_path)
-    check_data(data_set)
-
-    accuracy = Accuracy(theta_file_path, data_set)
-    check_thetas(accuracy)
-
-    rsquared = accuracy.compute_rsquared()
-    percentage = rsquared * 100
-    percentage_color = 'green' if percentage > 60 else 'red'
-    console.print(
-        f'{prefix} The accuracy of the model is [{percentage_color}]{percentage:.2f}%[/]'
-    )
-
-
-if __name__ == '__main__':
-    main()
+   
