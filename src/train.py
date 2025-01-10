@@ -43,13 +43,14 @@ class LinearRegression:
 
     def denormalize(self, normalized_theta0, normalized_theta1):
         """ Denormalize the theta values """
-        min_price_value = min(self.y)
-        max_price_value = max(self.y)
-        min_km_value = min(self.X)
-        max_km_value = max(self.X)
+        price_range = max(self.y) - min(self.y)
+        km_range = max(self.X) - min(self.X)
+        min_price = min(self.y)
+        min_km = min(self.X)
 
-        denormalized_theta0 = normalized_theta0 * (max_price_value - min_price_value) + min_price_value + (normalized_theta1 * min_km_value * (min_price_value - max_price_value) / (max_km_value - min_km_value))
-        denormalized_theta1 = (normalized_theta1 * (max_price_value - min_price_value) / (max_km_value - min_km_value))
+        denormalized_theta1 = normalized_theta1 * (price_range / km_range)
+        denormalized_theta0 = (normalized_theta0 * price_range + min_price + 
+                               normalized_theta1 * min_km * (min_price - max(self.y)) / km_range)
 
         return denormalized_theta0, denormalized_theta1
 
@@ -97,7 +98,6 @@ class LinearRegression:
                     
                     figure.canvas.draw()
                     figure.canvas.flush_events()
-            
 
         self.theta0, self.theta1 = self.denormalize(normalized_theta0, normalized_theta1)
 
